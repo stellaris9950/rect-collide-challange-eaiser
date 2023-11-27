@@ -11,8 +11,8 @@ class Wall:
         self.width = width
         self.x = x
         self.y = y
-        self.collison_x = x + length
-        self.collison_y = y + width
+        self.collision_x = x + length
+        self.collision_y = y + width
 
 
 # item = Wall(30, 300, 500, 50)
@@ -67,8 +67,7 @@ def drawWalls(walls_list):
         pygame.display.flip()
 
 def collisionDetect(player, wall):
-     return (player.x > wall['x'] and player.x < wall['collison_x'] and player.y < wall['y'] and player.y < wall['collison_y'])
-
+    return wall['collision_x'] >= player.x >= wall['x']-30 and wall['y']-30 <= player.y <= wall['collision_y']
 
 
 while running:
@@ -101,8 +100,14 @@ while running:
     for wall in walls_list:
         print(collisionDetect(player_pos, wall))
         if collisionDetect(player_pos, wall):
-            player_pos.x = 0
-            player_pos.y = 0
+            if player_pos.x >= wall['x']-30:
+                player_pos.x = wall['x']-30
+            elif wall['collision_x'] >= player_pos.x:
+                player_pos.x = player_pos.x = wall['x']-30
+            elif wall['y']-30 <= player_pos.y:
+                player_pos.y = wall['y']-30
+            elif player_pos.y <= wall['collision_y']:
+                player_pos.y = wall['collision_y']
 
     print(player_pos.x, player_pos.y)
 
