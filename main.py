@@ -100,12 +100,12 @@ while running:
     for wall in walls_list:
         print(collisionDetect(player_pos, wall))
         if collisionDetect(player_pos, wall):
-            if player_pos.x >= wall['x']-30:
+            if wall['collision_x'] >= player_pos.x >= wall['x']-30:
                 player_pos.x = wall['x']-30
-            elif wall['collision_x'] >= player_pos.x:
-                player_pos.x = player_pos.x = wall['x']-30
+            elif wall['collision_x'] <= player_pos.x:
+                player_pos.x = wall['collision_x']
             elif wall['y']-30 <= player_pos.y:
-                player_pos.y = wall['y']-30
+                player_pos.y = wall['y'] - 30
             elif player_pos.y <= wall['collision_y']:
                 player_pos.y = wall['collision_y']
 
