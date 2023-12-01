@@ -1,56 +1,4 @@
-import pygame
 
-# Initialize Pygame
-pygame.init()
-
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-
-# Globals
-player_x = 50
-
-
-# Initialize Screen
-size = (1000, 700)
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Pygame Sandbox")
-
-# Used to manage how fast the screen updates
-clock = pygame.time.Clock()
-
-# -------- Main Program Loop -----------
-done = False
-while not done:
-    # --- Main event loop
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-
-    # --- LOGIC
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_d]:
-        player_x += 5
-
-    # --- DRAWING
-    screen.fill(WHITE)
-
-    pygame.draw.rect(screen, GREEN, [player_x, 100, 30, 30])
-
-    # --- Update screen with what we've drawn
-    pygame.display.flip()
-
-    # --- Limit to 60 frames per second
-    clock.tick(60)
-# ----------- End Main Program Loop ---------------
-
-# Close the window and quit.
-pygame.quit()
-
-
-"""
 # Import External Librarys
 import pygame
 import json
@@ -59,7 +7,7 @@ import random
 
 # Create walls,only run once
 class Wall:
-    def __init__(self, length, width, x, y):
+    def __init__(self, x, y, length, width):
         self.length = length
         self.width = width
         self.x = x
@@ -71,13 +19,34 @@ class Wall:
 # item = Wall(30, 300, 500, 50)
 # print(type(item))
 
+def boarderCreate(screen_width, screen_height):
+    boarders = []
+
+
+    boarder = vars(Wall(0, 0, 10, screen_height))
+    boarders.append(boarder)
+    boarder = vars(Wall(0, 0, screen_width, 10))
+    boarders.append(boarder)
+    boarder = vars(Wall(screen_width-10, 0, 10, screen_height))
+    boarders.append(boarder)
+    boarder = vars(Wall(0, screen_height-10, screen_width, 10))
+    boarders.append(boarder)
+
+
+    print(boarders)
+
+    with open('walls.json', 'w') as boarder_list:
+        json.dump(boarders, boarder_list)
+
+# boarderCreate(720,540)
+
 def createWalls():
     wall_storage = []
 
     for i in range(3):
         walls_x = random.randrange(400, 600)
         walls_y = random.randrange(0, 100)
-        walls = vars(Wall(20, 300, walls_x, walls_y))
+        walls = vars(Wall(walls_x, walls_y, 20, 300))
         wall_storage.append(walls)
         print("mark1")
 
@@ -91,10 +60,6 @@ def createWalls():
 # Load walls from Json file
 with open("walls.json", "r") as wall_data_output:
     walls_list = json.load(wall_data_output)
-
-print()
-
-
 
 
 # pygame setup
@@ -112,7 +77,6 @@ player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 def drawWalls(walls_list):
     for walls in walls_list:
         pygame.draw.rect(screen, "grey", [walls['x'], walls['y'], walls['length'], walls['width']])
-        pygame.display.flip()
 
 def collisionDetect(player, wall):
     return wall['collision_x'] >= player.x >= wall['x']-30 and wall['y']-30 <= player.y <= wall['collision_y']
@@ -125,15 +89,39 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
+    # Game Logic
+
+    player_movement = 300 * dt
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
+        player_pos.y -= player_movement
     if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
+        player_pos.y += player_movement
     if keys[pygame.K_a]:
-        player_pos.x -= 300 * dt
+        player_pos.x -= player_movement
     if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+        player_pos.x += player_movement
+
+    # collision detection
+    for wall in walls_list:
+        # Eaiser one
+        """
+        if collisionDetect(player_pos, wall):
+            player_pos.x = 0
+            player_pos.y = 0
+        """
+        print(collisionDetect(player_pos, wall))
+        if wall['y']-30 <= player_pos.y <= wall['y']-30+player_movement and wall['collision_x'] >= player_pos.x >= wall['x']-30:
+            player_pos.y = wall['y'] - 30
+        if wall["collision_y"]-player_movement <= player_pos.y <= wall['collision_y'] and wall['collision_x'] >= player_pos.x >= wall['x']-30:
+            player_pos.y = wall['collision_y']
+        if wall['x']-30+player_movement >= player_pos.x >= wall['x']-30 and wall['collision_y'] >= player_pos.y >= wall['y']-30:
+            player_pos.x = wall['x']-30
+        if wall['collision_x'] >= player_pos.x >= wall['collision_x']-player_movement and wall['collision_y'] >= player_pos.y >= wall['y']-30:
+            player_pos.x = wall['collision_x']
+
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("white")
@@ -142,23 +130,7 @@ while running:
 
     drawWalls(walls_list)
 
-
-
-
-    # collision detection
-
-    # for wall in walls_list:
-    #     print(collisionDetect(player_pos, wall))
-    #     if wall['collision_x'] >= player_pos.x >= wall['x']-30 and player_pos.y >:
-    #         player_pos.x = wall['x']-30
-    #     elif wall['collision_x'] <= player_pos.x:
-    #         player_pos.x = wall['collision_x']
-    #     elif wall['y']-30 <= player_pos.y and wall['collision_x'] >= player_pos.x >= wall['x']-30:
-    #         player_pos.y = wall['y'] - 30
-    #     elif player_pos.y <= wall['collision_y']:
-    #         player_pos.y = wall['collision_y']
-
-    # print(player_pos.x, player_pos.y)
+    print(player_pos.x, player_pos.y)
 
 
     # flip() the display to put your work on screen
@@ -171,5 +143,5 @@ while running:
 
 pygame.quit()
 
-"""
+
 
