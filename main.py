@@ -112,15 +112,9 @@ while running:
             player_pos.x = 0
             player_pos.y = 0
         """
-        print(collisionDetect(player_pos, wall))
-        if wall['y']-30 <= player_pos.y <= wall['y']-30+player_movement and wall['collision_x'] >= player_pos.x >= wall['x']-30:
-            player_pos.y = wall['y'] - 30
-        if wall["collision_y"]-player_movement <= player_pos.y <= wall['collision_y'] and wall['collision_x'] >= player_pos.x >= wall['x']-30:
-            player_pos.y = wall['collision_y']
-        if wall['x']-30+player_movement >= player_pos.x >= wall['x']-30 and wall['collision_y'] >= player_pos.y >= wall['y']-30:
-            player_pos.x = wall['x']-30
-        if wall['collision_x'] >= player_pos.x >= wall['collision_x']-player_movement and wall['collision_y'] >= player_pos.y >= wall['y']-30:
-            player_pos.x = wall['collision_x']
+        if collisionDetect(player_pos, wall):
+            player_pos = pygame.Vector2(50, 300)
+
 
 
     # fill the screen with a color to wipe away anything from last frame
