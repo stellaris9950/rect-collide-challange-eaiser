@@ -106,14 +106,10 @@ while running:
 
     # collision detection
     for wall in walls_list:
-        # Eaiser one
-        """
-        if collisionDetect(player_pos, wall):
-            player_pos.x = 0
-            player_pos.y = 0
-        """
+
         if collisionDetect(player_pos, wall):
             player_pos = pygame.Vector2(50, 300)
+
 
 
 
