@@ -55,7 +55,7 @@ def createWalls():
     with open('walls.json', 'w') as walls_list:
         json.dump(wall_storage, walls_list)
 
-
+# createWalls()
 
 # Load walls from Json file
 with open("walls.json", "r") as wall_data_output:
